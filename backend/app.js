@@ -5,6 +5,8 @@ const cors = require("cors"); // cross origin resource sharing
 const cookieParser = require("cookie-parser");
 const connectToDB = require("./db/db");
 const userRouter = require("./routes/user.routes");
+const captainRouter = require("./routes/captain.routes");
+
 
 dotenv.config();
 connectToDB();
@@ -19,5 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/user", userRouter);
+app.use("/captain", captainRouter);
+
 
 module.exports = app;
