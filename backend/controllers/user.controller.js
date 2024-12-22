@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model');
 const userService = require('../services/user.service'); // creates a user given details
+const BlacklistToken = require('../models/blacklistToken.model');
 const { validationResult } = require('express-validator'); 
 
 
@@ -22,8 +23,9 @@ module.exports.registerUser = async (req, res, next) => {
 }
 
 module.exports.loginUser = async (req, res, next) => {
-   console.log("login route"); 
    const errors = validationResult(req);
+   console.log(req);
+
    if(!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
    }
@@ -38,8 +40,25 @@ module.exports.loginUser = async (req, res, next) => {
          return res.status(401).json({ error: "Invalid email or password" });
       }
       const token = await user.generateAuthToken();
+      res.cookie("token", token, { httpOnly: true });
       res.status(200).json({ user, token });
       console.log("User logged in successfully");
+   } catch (error) {
+      next(error);
+   }
+}
+
+module.exports.getUserProfile = async (req, res, next) => {
+   res.status(200).json(req.user); // req.user would be set by the middleware.
+}
+
+module.exports.logoutUser = async (req, res, next) => {
+   const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+   res.clearCookie("token");
+   
+   try {
+      await BlacklistToken.create({ token });
+      res.status(200).json({ message: "User logged out successfully" });
    } catch (error) {
       next(error);
    }
