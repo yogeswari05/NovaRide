@@ -12,3 +12,8 @@ for users who log out, create a model 'blacklist'
 
 enhances security by ensuring that the token is invalidated both on the client 
 side (by clearing the cookie) and on the server side (by blacklisting the token).
+
+FRONTEND
+npm create vite@latest 
+npm i 
+npm run dev 
