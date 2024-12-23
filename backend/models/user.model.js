@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
       required: true,
       unique: true,
       minlength: [1, "Email must be at least 1 characters long"],
+      match: [/\S+@\S+\.\S+/, "Please enter a valid email address"],
    },
    password: {
       type: String,
@@ -31,8 +32,8 @@ const UserSchema = new mongoose.Schema({
    
 });
 
-UserSchema.methods.generateAuthToken = () => {
-   const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+UserSchema.methods.generateAuthToken = function() {
+   const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
    return token;
 }
 

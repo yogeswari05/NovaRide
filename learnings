@@ -1,0 +1,19 @@
+data model in models, we use it in controllers.
+db -> connecting to database.
+services -> interact with the database.
+controllers -> logics in side the routes
+
+create a readme.md file to docs the /users/register endpoint with decription and status code, also write how the data is required in the endpoint
+
+we are using a middleware to check if a user is loggedin or not.
+req.cookies.token to check the set cookie.
+
+for users who log out, create a model 'blacklist'
+
+enhances security by ensuring that the token is invalidated both on the client 
+side (by clearing the cookie) and on the server side (by blacklisting the token).
+
+FRONTEND
+npm create vite@latest 
+npm i 
+npm run dev 
