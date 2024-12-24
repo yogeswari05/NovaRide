@@ -4,12 +4,16 @@ const blacklistModel = require('../models/blacklistToken.model')
 const captainModel = require('../models/captain.model');
 
 module.exports.authUser = async (req, res, next) => {
-   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+   console.log(req.cookies.token, req.headers.authorization);
+   const token = (req.cookies.token || req.headers.authorization?.split(' ')[1])?.replace(/"/g, '');
+   console.log("Token in authUser: ", token);
+
    if(!token) {
       return res.status(401).json({ error: "Unauthorized" });
    }
    const isBlackListed = await blacklistModel.findOne({ token: token }); // enhances security
    if (isBlackListed) {
+      console.log("Token is blacklisted!!");
       return res.status(401).json({ message: "Unauthorized" });
    }
    
@@ -21,12 +25,13 @@ module.exports.authUser = async (req, res, next) => {
       next();
 
    } catch (error) {
+      console.log("Error in authUser: ", error);
       return res.status(401).json({ error: "Unauthorized" });
    } 
 }
 
 module.exports.authCaptain = async (req, res, next) => {
-   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+   const token = (req.cookies.token || req.headers.authorization?.split(' ')[1])?.replace(/"/g, '');
    if(!token) {
       return res.status(401).json({ error: "Unauthorized" });
    }

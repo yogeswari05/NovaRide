@@ -17,3 +17,5 @@ FRONTEND
 npm create vite@latest 
 npm i 
 npm run dev 
+
+axios -> to send data from frontend to the server 
