@@ -5,7 +5,9 @@ const BlacklistToken = require('../models/blacklistToken.model');
 
 module.exports.registerCaptain = async (req, res, next) => {
    const errors = validationResult(req);
-   if(!errors.isEmpty()) {
+   console.log(req.body);
+   if (!errors.isEmpty()) {
+      console.log("errors: ", errors);
       return res.status(400).json({ errors: errors.array() });
    }
    try {
@@ -16,8 +18,16 @@ module.exports.registerCaptain = async (req, res, next) => {
       }
       const hashedPassword = await captainModel.hashPassword(password);
       const captain = await captainService.createCaptain({
-         firstname: fullname.firstname, lastname: fullname.lastname, email, password: hashedPassword,
-         color: vehicle.color, plate: vehicle.plate, capacity: vehicle.capacity, vehicleType: vehicle.vehicleType, location: vehicle.location.lat, location: vehicle.location.lng
+        firstname: fullname.firstname,
+        lastname: fullname.lastname,
+        email,
+        password: hashedPassword,
+        color: vehicle.color,
+        plate: vehicle.plate,
+        capacity: vehicle.capacity,
+        vehicleType: vehicle.vehicleType,
+      //   location: vehicle.location.lat,
+      //   location: vehicle.location.lng,
       });
       const token = await captain.generateAuthToken();
       res.status(201).json({ captain, token });
@@ -52,7 +62,8 @@ module.exports.loginCaptain = async (req, res, next) => {
 }
 
 module.exports.getCaptainProfile = async (req, res, next) => {
-  res.status(200).json(req.captain); // req.user would be set by the middleware.
+   console.log("captain in capController: ", req.captain);
+   res.status(200).json(req.captain); // req.user would be set by the middleware.
 };
 
 
@@ -61,7 +72,10 @@ module.exports.logoutCaptain = async (req, res, next) => {
    res.clearCookie("token");
 
    try {
-     await BlacklistToken.create({ token });
+     const isBlackListed = await BlacklistToken.findOne({ token });
+     if (!isBlackListed) {
+        await BlacklistToken.create({ token });
+     }
      res.status(200).json({ message: "Captain logged out successfully" });
    } catch (error) {
      next(error);
